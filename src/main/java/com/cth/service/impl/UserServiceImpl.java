@@ -11,7 +11,9 @@ import com.cth.dao.IUserDao;
 import com.cth.pojo.User;
 import com.cth.service.IUserService;
 import com.cth.utils.ErrorCode;
+import com.cth.utils.Global;
 import com.cth.utils.Paginate;
+import com.cth.utils.PasswordEncoder;
 
 /**
  * @author Administrator
@@ -20,9 +22,13 @@ import com.cth.utils.Paginate;
 public class UserServiceImpl implements IUserService, ErrorCode {
           @Resource(name = "userDao")
           private IUserDao userDao;
+          @Resource(name = "encoder")
+          private PasswordEncoder encoder;
           
           @Override
           public int save(User t) {
+                    t.setSalt(Global.SALT);
+                    t.setPassword(encoder.encode(t.getPassword()));
                     return this.userDao.save(t) == 1 ? SUCCESS : FAILED;
           }
           
@@ -74,4 +80,17 @@ public class UserServiceImpl implements IUserService, ErrorCode {
                     return null;
           }
           
+          @Override
+          public User validateUser(String account, String password) {
+                    User su = this.userDao.querySfdaUserByPhone(account);
+                    if (su != null) {
+                              if (encoder.matches(password, su.getPassword(), su.getSalt())) {
+                                        su.setSalt(null);
+                                        su.setPassword(null);
+                              } else {
+                                        su = null;
+                              }
+                    }
+                    return su;
+          }
 }

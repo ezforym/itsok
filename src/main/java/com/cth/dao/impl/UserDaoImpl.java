@@ -8,7 +8,9 @@ import java.util.List;
 import javax.annotation.Resource;
 
 import org.springframework.dao.DataAccessException;
+import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.namedparam.BeanPropertySqlParameterSource;
+import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
@@ -31,8 +33,9 @@ public class UserDaoImpl implements IUserDao {
           @Override
           public int save(User t) {
                     int result = -1;
-                    String sql = "insert into user (\n" + "	name,\n" + "	phone\n" + ")\n" + "VALUES\n" + "	(\n"
-                                        + "	:name,\n" + "	:phone\n" + ")\n";
+                    String sql = "insert into user (\n" + " salt,\n" + " password,\n" + " address,\n" + "	name,\n"
+                                        + "	phone\n" + ")\n" + "VALUES\n" + "	(\n" + " :salt,\n" + " :password,\n"
+                                        + "   :address,\n" + "	:name,\n" + "	:phone\n" + ")\n";
                     SqlParameterSource sps = new BeanPropertySqlParameterSource(t);
                     KeyHolder key = new GeneratedKeyHolder();
                     try {
@@ -90,6 +93,20 @@ public class UserDaoImpl implements IUserDao {
           public List<User> paginate(int key, int value, Paginate pag) {
                     // TODO Auto-generated method stub
                     return null;
+          }
+          
+          @Override
+          public User querySfdaUserByPhone(String account) {
+                    List<User> list = null;
+                    SqlParameterSource sps = new MapSqlParameterSource("account", account);
+                    String sql = "SELECT\n" + " *\n" + "FROM\n" + "  user\n" + "WHERE\n" + " dr = 1\n"
+                                        + "AND  `phone`=:account ";
+                    try {
+                              list = this.jdbcTemplate.query(sql, sps, new BeanPropertyRowMapper<User>(User.class));
+                    } catch (DataAccessException e) {
+                              logger.error(e.getMessage());
+                    }
+                    return (list != null && list.size() == 1) ? list.get(0) : null;
           }
           
 }

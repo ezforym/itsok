@@ -69,15 +69,14 @@
 	</bean>
 
 	<!-- 构造方式注入密码加密器 -->
-	<bean name="spencoder"
-		class="org.springframework.security.crypto.password.StandardPasswordEncoder">
-		<constructor-arg value="oms123456"></constructor-arg>
+	<bean name="encoder" class="com.cth.utils.PasswordEncoder">
+		<constructor-arg value="96I9aWGwA3ORKkjHNPfCrDNvtNlhb6Nc"></constructor-arg>
 	</bean>
-
 	<tx:annotation-driven transaction-manager="transactionManager" />
 	<!-- START DAO -->
 	<import resource="applicationContext-dao.xml" />
 	<!-- START SERVICE -->
 	<import resource="applicationContext-service.xml" />
+	<!-- START CONTROLLER -->
 	<import resource="applicationContext-controller.xml" />
 </beans>
