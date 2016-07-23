@@ -8,7 +8,9 @@ import java.io.Serializable;
 /**
  * 分页排序参数
  * 
- * @author Jacky @version v1.0.0
+ * @author wuyize
+ * 
+ * @version v1.0.0
  * @date 2015-10-16
  * 
  */
